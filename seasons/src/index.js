@@ -1,14 +1,22 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Component } from 'react';
+import SeasonDisplay from './SeasonDisplay/SeasonDisplay';
+import Loader from './Loader/Loader';
 
 class App extends Component {
-	constructor(props) {
-		// ref to parents contructor function
-		super(props);
-		// State object ONLY TIME we direct assign
-		this.state = { lat: null, errorMessage: '' };
+	// constructor(props) {
+	// 	// ref to parents contructor function
+	// 	super(props);
+	// 	// State object ONLY TIME we direct assign
+	// 	this.state = { lat: null, errorMessage: '' };
+	// }
 
+	// Refactored State
+	state = { lat: null, errorMessage: '' };
+
+	// Place to do data-loading
+	componentDidMount() {
 		// Getting current location
 		window.navigator.geolocation.getCurrentPosition(
 			//creating callbacks
@@ -24,17 +32,31 @@ class App extends Component {
 		);
 	}
 
-	// Have to define render
-	render() {
+	// Place for data loading when state or props change
+	componentDidUpdate() {
+		// console.log('My component was updated and re-rendered');
+	}
+
+	// Place for non-react cleanup
+	componentWillUnmount() {
+		// console.log('cleanup for non-react stuff');
+	}
+
+	renderContent() {
 		if (this.state.errorMessage && !this.state.lat) {
 			return <div>{this.state.errorMessage}</div>;
 		}
 		if (!this.state.errorMessage && this.state.lat) {
-			return <div>Latitude:{this.state.lat}</div>;
+			// pass state object to SeasonDisplay
+			return <SeasonDisplay lat={this.state.lat} />;
 		}
-		if (!this.state.errorMessage && !this.state.lat) {
-			return <div>Loading!</div>;
-		}
+
+		return <Loader message='Please accept location request' />;
+	}
+
+	// Have to define render
+	render() {
+		return <div style={{border:'1px inset red'}}>{this.renderContent()}</div>;
 	}
 }
 
